@@ -90,8 +90,10 @@ suite('Functional Tests', () => {
       .post(`/api/issues/${project}`)
       .send(issue)
       .end((err, res) => {
-        assert.strictEqual(res.status, 400);
-        assert.strictEqual(res.type, 'text/html');
+        assert.strictEqual(res.status, 200);
+        assert.strictEqual(res.type, 'application/json');
+        assert.strictEqual(res.body.error, 'required field(s) missing');
+
         done();
       });
   });
@@ -119,6 +121,22 @@ suite('Functional Tests', () => {
   // Update an issue with no fields to update: PUT request to /api/issues/{project}
   // Update an issue with an invalid _id: PUT request to /api/issues/{project}
   // Delete an issue: DELETE request to /api/issues/{project}
+  test('Delete an issue', (done) => {
+    const {_id} = createdIssues.pop();
+
+    chai.request(server)
+      .delete(`/api/issues/${project}`)
+      .send({_id})
+      .end((err, res) => {
+        assert.strictEqual(res.status, 200);
+        assert.strictEqual(res.type, 'application/json');
+        assert.strictEqual(res.body.result, 'successfully deleted');
+        assert.strictEqual(res.body._id, _id);
+
+        done();
+      });
+  });
+
   // Delete an issue with an invalid _id: DELETE request to /api/issues/{project}
   // Delete an issue with missing _id: DELETE request to /api/issues/{project}
 

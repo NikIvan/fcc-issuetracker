@@ -107,7 +107,6 @@ module.exports = function (app) {
     
     .delete(async (req, res) => {
       let issue;
-      let result;
 
       if (req.body._id == null) {
         return res.json({ error: 'missing _id' });
@@ -121,7 +120,7 @@ module.exports = function (app) {
       }
 
       try {
-        result = await IssueService.deleteIssue(issue._id);
+        await IssueService.deleteIssue(issue._id);
       } catch (err) {
         console.error(err);
         return res.json({ error: 'could not delete', '_id': issue._id })

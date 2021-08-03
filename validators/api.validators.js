@@ -25,7 +25,7 @@ const createIssueSchema = Joi.object({
 const validateCreateIssue = validate(createIssueSchema);
 
 const updateIssueSchema = Joi.object({
-  _id: Joi.string().required(),
+  _id: Joi.string().regex(/^[0-9a-fA-F]{24}$/).required(),
   issue_title: Joi.string().allow(''),
   issue_text: Joi.string().allow(''),
   created_by: Joi.string().allow(''),
@@ -36,7 +36,7 @@ const updateIssueSchema = Joi.object({
 const validateUpdateIssue = validate(updateIssueSchema);
 
 const deleteIssueSchema = Joi.object({
-  _id: Joi.string().required(),
+  _id: Joi.string().regex(/^[0-9a-fA-F]{24}$/).required(),
 });
 const validateDeleteIssue = validate(deleteIssueSchema);
 
