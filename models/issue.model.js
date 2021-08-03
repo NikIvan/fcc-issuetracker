@@ -5,7 +5,6 @@ const issueSchema = new Schema({
   issue_title: {
     type: String,
     required: true,
-    unique: true,
   },
   issue_text: {
     type: String,
