@@ -1,6 +1,6 @@
 const chaiHttp = require('chai-http');
 const chai = require('chai');
-const assert = chai.assert;
+const {assert, expect} = chai;
 const server = require('../server');
 const IssueService = require('../services/issue.service.js');
 
@@ -113,7 +113,32 @@ suite('Functional Tests', () => {
   });
 
   // View issues on a project with one filter: GET request to /api/issues/{project}
+  test('View issues on a project with one filter', (done) => {
+    chai.request(server)
+      .get(`/api/issues/${project}?issue_title=${createdIssues[0].issue_title}`)
+      .end((err, res) => {
+        assert.strictEqual(res.status, 200);
+        assert.strictEqual(res.type, 'application/json');
+        assert.isArray(res.body);
+        assert.strictEqual(res.body.length, 1);
+        assert.deepStrictEqual(res.body[0], createdIssues[0]);
+        done();
+      });
+  });
+
   // View issues on a project with multiple filters: GET request to /api/issues/{project}
+  test('View issues on a project with one filter', (done) => {
+    chai.request(server)
+      .get(`/api/issues/${project}?issue_title=${createdIssues[0].issue_title}&open=true`)
+      .end((err, res) => {
+        assert.strictEqual(res.status, 200);
+        assert.strictEqual(res.type, 'application/json');
+        assert.isArray(res.body);
+        assert.strictEqual(res.body.length, 1);
+        assert.deepStrictEqual(res.body[0], createdIssues[0]);
+        done();
+      });
+  });
 
   // Update one field on an issue: PUT request to /api/issues/{project}
   test('Update one field on an issue', (done) => {
@@ -136,6 +161,7 @@ suite('Functional Tests', () => {
         done();
       });
   });
+
   // Update multiple fields on an issue: PUT request to /api/issues/{project}
   test('Update multiple fields on an issue', (done) => {
     const {_id} = createdIssues[0];
@@ -230,7 +256,38 @@ suite('Functional Tests', () => {
   });
 
   // Delete an issue with an invalid _id: DELETE request to /api/issues/{project}
+  test('Delete an issue with an invalid _id', (done) => {
+    const _id = 'invalid id';
+
+    chai.request(server)
+      .delete(`/api/issues/${project}`)
+      .send({_id})
+      .end((err, res) => {
+        assert.strictEqual(res.status, 200);
+        assert.strictEqual(res.type, 'application/json');
+        expect(res.body).to.have.all.keys('error', '_id');
+        assert.deepStrictEqual(res.body.error, 'could not delete');
+        assert.deepStrictEqual(res.body._id, _id);
+
+        done();
+      });
+  });
+
   // Delete an issue with missing _id: DELETE request to /api/issues/{project}
+  test('Delete an issue with missing _id', (done) => {
+
+    chai.request(server)
+      .delete(`/api/issues/${project}`)
+      .send({})
+      .end((err, res) => {
+        assert.strictEqual(res.status, 200);
+        assert.strictEqual(res.type, 'application/json');
+        expect(res.body).to.have.all.keys('error');
+        assert.deepStrictEqual(res.body.error, 'missing _id');
+
+        done();
+      });
+  });
 
   after((done) => {
     IssueService.deleteIssuesByProject(project).then(done);

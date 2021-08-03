@@ -7,7 +7,6 @@ const {
 } = require('../validators/api.validators.js');
 
 const IssueService = require('../services/issue.service.js');
-const {valid} = require('joi');
 
 // TODO: Complete the necessary routes in /routes/api.js
 module.exports = function (app) {

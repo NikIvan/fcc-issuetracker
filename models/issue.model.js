@@ -83,23 +83,7 @@ const IssueModel = {
 
   findByProject: async (project, filters) => {
     let issues;
-    let query = Issue.find({project}, { project: 0, __v: 0 }).lean();
-
-    // const {from, to, limit} = filters;
-    //
-    // if (from != null) {
-    //   query.where('date').gte(new Date(from));
-    // }
-    //
-    // if (to != null) {
-    //   query.where('date').lte(new Date(to));
-    // }
-    //
-    // if (limit != null) {
-    //   query.limit(limit);
-    // }
-    //
-    //
+    let query = Issue.find({project, ...filters}, { project: 0, __v: 0 }).lean();
 
     try {
       issues = await query;
