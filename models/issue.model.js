@@ -104,6 +104,17 @@ const IssueModel = {
 
     const {_id} = issueInput;
 
+    try {
+      const issue = await Issue.findOne({_id, project});
+      
+      if (issue == null) {
+        throw new Error('Issue not found');
+      }
+    } catch (err) {
+      console.error(err);
+      throw new Error('Cannot update issue by id');
+    }
+
     [
       'issue_title',
       'issue_text',
