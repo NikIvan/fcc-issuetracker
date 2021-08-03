@@ -74,7 +74,14 @@ module.exports = function (app) {
     .put(async (req, res) => {
       let project;
       let issue;
-      let result;
+
+      if (req.body._id == null) {
+        return res.json({ error: 'missing _id' });
+      }
+
+      if (Object.keys(req.body).length === 1) {
+        return res.json({ error: 'no update field(s) sent', '_id': req.body._id });
+      }
 
       try {
         const validateResults = await Promise.all([
@@ -85,48 +92,42 @@ module.exports = function (app) {
         project = validateResults[0];
         issue = validateResults[1];
       } catch (err) {
-        return res.status(400).send(err.message);
+        return res.json({ error: 'could not update', '_id':  req.body._id});
       }
 
       try {
-        result = await IssueService.updateIssue(project, issue);
+        await IssueService.updateIssue(project, issue);
       } catch (err) {
         console.error(err);
-        return res.status(500).send('Server error');
+        return res.json({ error: 'could not update', '_id':  issue._id});
       }
 
-      // issue: {
-      //     _id: '8383849',
-      //     issue_title: 'Some new title',
-      //     issue_text: 'Some new text',
-      //     created_by: 'Bob',
-      //     assigned_to: 'Bob',
-      //     status_text: 'New status',
-      //     open: 'false'
-      //   }
-      return res.json(result);
-      
+      return res.json({  result: 'successfully updated', '_id': issue._id });
     })
     
     .delete(async (req, res) => {
       let issue;
       let result;
 
+      if (req.body._id == null) {
+        return res.json({ error: 'missing _id' });
+      }
+
+
       try {
         issue = await validateDeleteIssue(req.body);
       } catch (err) {
-        return res.status(400).send(err.message);
+        return res.json({ error: 'could not delete', '_id': req.body._id });
       }
 
-      // issue: { _id: '8383849' }
       try {
         result = await IssueService.deleteIssue(issue._id);
       } catch (err) {
         console.error(err);
-        return res.status(500).send('Server error');
+        return res.json({ error: 'could not delete', '_id': issue._id })
       }
 
-      return res.json(result);
+      return res.json({ result: 'successfully deleted', '_id': issue._id });
     });
 
     app.route('/api/issues/:project/delete').get(async (req, res) => {
