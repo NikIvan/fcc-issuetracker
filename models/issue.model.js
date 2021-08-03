@@ -114,7 +114,9 @@ const IssueModel = {
   updateById: async (_id, issueInput) => {
     let result;
 
-    const setObject = {};
+    const setObject = {
+      updated_on: Date.now(),
+    };
 
     [
       'issue_title',
