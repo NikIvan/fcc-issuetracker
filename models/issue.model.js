@@ -111,12 +111,14 @@ const IssueModel = {
     return issues;
   },
 
-  updateById: async (_id, issueInput) => {
+  updateById: async (project, issueInput) => {
     let result;
 
     const setObject = {
       updated_on: Date.now(),
     };
+
+    const {_id} = issueInput;
 
     [
       'issue_title',
@@ -128,7 +130,7 @@ const IssueModel = {
     ].filter((key) => issueInput[key] != null)
       .forEach((key) => setObject[key] = issueInput[key]);
 
-    let query = Issue.findOneAndUpdate({_id}, {
+    let query = Issue.findOneAndUpdate({_id, project}, {
       $set: setObject,
     }).lean();
 
@@ -142,8 +144,8 @@ const IssueModel = {
     return result;
   },
 
-  deleteById: async (_id) => {
-    let query = Issue.deleteOne({_id});
+  deleteById: async (project, _id) => {
+    let query = Issue.deleteOne({_id, project});
 
     try {
       await query;

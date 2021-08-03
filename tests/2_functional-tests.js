@@ -114,12 +114,104 @@ suite('Functional Tests', () => {
 
   // View issues on a project with one filter: GET request to /api/issues/{project}
   // View issues on a project with multiple filters: GET request to /api/issues/{project}
-  // Update one field on an issue: PUT request to /api/issues/{project}
 
+  // Update one field on an issue: PUT request to /api/issues/{project}
+  test('Update one field on an issue', (done) => {
+    const {_id} = createdIssues[0];
+
+    const dataToUpdate = {
+      issue_title: 'Some very merry new title',
+      _id,
+    };
+
+    chai.request(server)
+      .put(`/api/issues/${project}`)
+      .send(dataToUpdate)
+      .end((err, res) => {
+        assert.strictEqual(res.status, 200);
+        assert.strictEqual(res.type, 'application/json');
+        assert.strictEqual(res.body.result, 'successfully updated');
+        assert.strictEqual(res.body._id, _id);
+
+        done();
+      });
+  });
   // Update multiple fields on an issue: PUT request to /api/issues/{project}
+  test('Update multiple fields on an issue', (done) => {
+    const {_id} = createdIssues[0];
+
+    const dataToUpdate = {
+      issue_title: 'Some new very merry new title',
+      issue_text: 'Some issue updated new text',
+      _id,
+    };
+
+    chai.request(server)
+      .put(`/api/issues/${project}`)
+      .send(dataToUpdate)
+      .end((err, res) => {
+        assert.strictEqual(res.status, 200);
+        assert.strictEqual(res.type, 'application/json');
+        assert.strictEqual(res.body.result, 'successfully updated');
+        assert.strictEqual(res.body._id, _id);
+
+        done();
+      });
+  });
+
   // Update an issue with missing _id: PUT request to /api/issues/{project}
+  test('Update an issue with missing _id', (done) => {
+    const dataToUpdate = {
+      issue_title: 'Some new very merry new title',
+      issue_text: 'Some issue updated new text',
+    };
+
+    chai.request(server)
+      .put(`/api/issues/${project}`)
+      .send(dataToUpdate)
+      .end((err, res) => {
+        assert.strictEqual(res.status, 200);
+        assert.strictEqual(res.type, 'application/json');
+        assert.strictEqual(res.body.error, 'missing _id');
+
+        done();
+      });
+  });
+
   // Update an issue with no fields to update: PUT request to /api/issues/{project}
+  test('Update an issue with no fields to update', (done) => {
+    const {_id} = createdIssues[0];
+
+    chai.request(server)
+      .put(`/api/issues/${project}`)
+      .send({_id})
+      .end((err, res) => {
+        assert.strictEqual(res.status, 200);
+        assert.strictEqual(res.type, 'application/json');
+        assert.strictEqual(res.body.error, 'no update field(s) sent');
+        assert.strictEqual(res.body._id, _id);
+
+        done();
+      });
+  });
+
   // Update an issue with an invalid _id: PUT request to /api/issues/{project}
+  test('Update an issue with an invalid _id', (done) => {
+    const _id = 'some invalid id';
+
+    chai.request(server)
+      .put(`/api/issues/${project}`)
+      .send({_id})
+      .end((err, res) => {
+        assert.strictEqual(res.status, 200);
+        assert.strictEqual(res.type, 'application/json');
+        assert.strictEqual(res.body.error, 'could not update');
+        assert.strictEqual(res.body._id, _id);
+
+        done();
+      });
+  });
+
   // Delete an issue: DELETE request to /api/issues/{project}
   test('Delete an issue', (done) => {
     const {_id} = createdIssues.pop();

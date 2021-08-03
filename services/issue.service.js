@@ -14,11 +14,11 @@ const IssueService = {
     return newIssue;
   },
 
-  updateIssue: async (_id, issue) => {
-    return await IssueModel.updateById(_id, issue);
+  updateIssue: async (project, issue) => {
+    return await IssueModel.updateById(project, issue);
   },
-  deleteIssue: async (_id) => {
-    return await IssueModel.deleteById(_id);
+  deleteIssue: async (project, _id) => {
+    return await IssueModel.deleteById(project, _id);
   },
 
   deleteIssuesByProject: async (project) => {

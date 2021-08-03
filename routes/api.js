@@ -79,10 +79,6 @@ module.exports = function (app) {
         return res.json({ error: 'missing _id' });
       }
 
-      if (Object.keys(req.body).length === 1) {
-        return res.json({ error: 'no update field(s) sent', '_id': req.body._id });
-      }
-
       try {
         const validateResults = await Promise.all([
           validateProject(req.params.project),
@@ -95,6 +91,10 @@ module.exports = function (app) {
         return res.json({ error: 'could not update', '_id':  req.body._id});
       }
 
+      if (Object.keys(issue).length === 1) {
+        return res.json({ error: 'no update field(s) sent', '_id': issue._id });
+      }
+
       try {
         await IssueService.updateIssue(project, issue);
       } catch (err) {
@@ -102,7 +102,7 @@ module.exports = function (app) {
         return res.json({ error: 'could not update', '_id':  issue._id});
       }
 
-      return res.json({  result: 'successfully updated', '_id': issue._id });
+      return res.json({ result: 'successfully updated', '_id': issue._id });
     })
     
     .delete(async (req, res) => {
